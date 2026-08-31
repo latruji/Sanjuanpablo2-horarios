@@ -1,0 +1,87 @@
+:root {
+  --azul: #1e2a6e;
+  --rojo: #b0202e;
+  --amarillo: #f2c116;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f5f6fa;
+  color: #222;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.header img { width: 48px; height: 48px; }
+.header h1 { font-size: 18px; color: var(--azul); margin: 0; }
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 4px; color: #444; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+textarea { resize: vertical; min-height: 60px; }
+
+button.primary {
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px;
+  background: var(--azul);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.primary:disabled { opacity: 0.6; }
+
+button.google {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.msg-ok { color: #1a7f37; font-size: 14px; margin-top: 10px; }
+.msg-error { color: var(--rojo); font-size: 14px; margin-top: 10px; }
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--amarillo);
+  color: #5a4400;
+  margin-left: 8px;
+}
