@@ -23,34 +23,44 @@ export default function FormularioEvento() {
     setEnviando(true);
     setResultado(null);
 
-    const res = await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tipo,
-        nivel,
-        curso,
-        fecha,
-        horaSalida,
-        horaRegreso: esSalidaEducativa ? horaRegreso : "",
-        destino: esSalidaEducativa ? destino : "",
-        observaciones,
-      }),
-    });
+    try {
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipo,
+          nivel,
+          curso,
+          fecha,
+          horaSalida,
+          horaRegreso: esSalidaEducativa ? horaRegreso : "",
+          destino: esSalidaEducativa ? destino : "",
+          observaciones,
+        }),
+      });
 
-    const data = await res.json();
-    setEnviando(false);
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Respuesta inesperada del servidor (status ${res.status})` };
+      }
 
-    if (res.ok) {
-      setResultado({ ok: true, msg: "Evento cargado y avisado a portería." });
-      setCurso("");
-      setFecha("");
-      setHoraSalida("");
-      setHoraRegreso("");
-      setDestino("");
-      setObservaciones("");
-    } else {
-      setResultado({ ok: false, msg: data.error || "Error desconocido" });
+      if (res.ok) {
+        setResultado({ ok: true, msg: "Evento cargado y avisado a portería." });
+        setCurso("");
+        setFecha("");
+        setHoraSalida("");
+        setHoraRegreso("");
+        setDestino("");
+        setObservaciones("");
+      } else {
+        setResultado({ ok: false, msg: data.error || "Error desconocido" });
+      }
+    } catch (err) {
+      setResultado({ ok: false, msg: "Error de conexión: " + err.message });
+    } finally {
+      setEnviando(false);
     }
   }
 
