@@ -13,7 +13,7 @@ const TIPO_LABEL = {
 };
 
 export async function POST(req) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session || !isAdmin(session.user.email)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
