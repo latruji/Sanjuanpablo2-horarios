@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/authorizedUsers";
 import { crearEventoCalendar } from "@/lib/googleCalendar";
