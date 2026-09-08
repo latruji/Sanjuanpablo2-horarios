@@ -1,10 +1,11 @@
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 import { NextResponse } from "next/server";
 import { isPortero } from "@/lib/authorizedUsers";
 import { sql } from "@/lib/db";
 
 export async function POST(req) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session || !isPortero(session.user.email)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
