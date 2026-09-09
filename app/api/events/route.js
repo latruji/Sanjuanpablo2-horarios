@@ -10,6 +10,7 @@ const TIPO_LABEL = {
   entrada_tarde: "Entrada tardía",
   salida_anticipada: "Salida anticipada",
   salida_educativa: "Salida educativa",
+  reunion_padres: "Reunión de padres",
 };
 
 export async function POST(req) {
