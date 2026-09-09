@@ -16,7 +16,10 @@ export default function FormularioEvento() {
   const [resultado, setResultado] = useState(null);
 
   const esSalidaEducativa = tipo === "salida_educativa";
-  const restringirNivel = !esSalidaEducativa;
+  const esReunionPadres = tipo === "reunion_padres";
+  const nivelLibre = esSalidaEducativa || esReunionPadres;
+  // Entradas tardías / salidas anticipadas: solo aplican a secundario según lo definido
+  const restringirNivel = !nivelLibre;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,7 +36,7 @@ export default function FormularioEvento() {
           curso,
           fecha,
           horaSalida,
-          horaRegreso: esSalidaEducativa ? horaRegreso : "",
+          horaRegreso: esSalidaEducativa || esReunionPadres ? horaRegreso : "",
           destino: esSalidaEducativa ? destino : "",
           observaciones,
         }),
@@ -71,12 +74,15 @@ export default function FormularioEvento() {
         value={tipo}
         onChange={(e) => {
           setTipo(e.target.value);
-          if (e.target.value !== "salida_educativa") setNivel("Secundario");
+          if (e.target.value !== "salida_educativa" && e.target.value !== "reunion_padres") {
+            setNivel("Secundario");
+          }
         }}
       >
         <option value="entrada_tarde">Entrada tardía (secundario)</option>
         <option value="salida_anticipada">Salida anticipada (secundario)</option>
         <option value="salida_educativa">Salida educativa (cualquier nivel)</option>
+        <option value="reunion_padres">Reunión de padres (cualquier nivel)</option>
       </select>
 
       <label>Nivel</label>
@@ -106,7 +112,7 @@ export default function FormularioEvento() {
         onChange={(e) => setFecha(e.target.value)}
       />
 
-      <label>{esSalidaEducativa ? "Hora de salida" : "Hora"}</label>
+      <label>{esSalidaEducativa ? "Hora de salida" : esReunionPadres ? "Hora de inicio" : "Hora"}</label>
       <input
         type="time"
         required
@@ -114,15 +120,19 @@ export default function FormularioEvento() {
         onChange={(e) => setHoraSalida(e.target.value)}
       />
 
-      {esSalidaEducativa && (
+      {(esSalidaEducativa || esReunionPadres) && (
         <>
-          <label>Hora de regreso (opcional)</label>
+          <label>{esReunionPadres ? "Hora de fin (opcional)" : "Hora de regreso (opcional)"}</label>
           <input
             type="time"
             value={horaRegreso}
             onChange={(e) => setHoraRegreso(e.target.value)}
           />
+        </>
+      )}
 
+      {esSalidaEducativa && (
+        <>
           <label>Destino</label>
           <input
             type="text"
