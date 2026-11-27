@@ -13,7 +13,6 @@ export default function Dashboard({ session, calendarUrl }) {
   const [levelFilter, setLevelFilter] = useState('all');
   const [turnFilter, setTurnFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-
   const [showForm, setShowForm] = useState(false);
   const [editingNotice, setEditingNotice] = useState(null);
   const [showUsers, setShowUsers] = useState(false);
@@ -37,24 +36,11 @@ export default function Dashboard({ session, calendarUrl }) {
     }
   }
 
-  useEffect(() => {
-    if (isAuthorized) {
-      fetchNotices();
-    }
-  }, [isAuthorized]);
+  useEffect(() => { if (isAuthorized) fetchNotices(); }, [isAuthorized]);
 
-  const todayCount = useMemo(
-    () => notices.filter((n) => n.event_date === today).length,
-    [notices, today]
-  );
-  const tripsTodayCount = useMemo(
-    () => notices.filter((n) => n.event_date === today && n.type === 'salida_educativa').length,
-    [notices, today]
-  );
-  const upcomingCount = useMemo(
-    () => notices.filter((n) => n.event_date > today).length,
-    [notices, today]
-  );
+  const todayCount = useMemo(() => notices.filter((n) => n.event_date === today).length, [notices, today]);
+  const tripsTodayCount = useMemo(() => notices.filter((n) => n.event_date === today && n.type === 'salida_educativa').length, [notices, today]);
+  const upcomingCount = useMemo(() => notices.filter((n) => n.event_date > today).length, [notices, today]);
 
   const filteredNotices = useMemo(() => {
     return notices.filter((n) => {
@@ -79,13 +65,10 @@ export default function Dashboard({ session, calendarUrl }) {
   }, [filteredNotices, tab]);
 
   async function handleDelete(notice) {
-    if (!confirm(`¿Eliminar este aviso (${notice.courses.join(', ')})? También se quitará de Google Calendar.`)) {
-      return;
-    }
+    const label = notice.type === 'otros' ? 'Reuni\u00f3n / Visita' : notice.courses.join(', ');
+    if (!confirm(`\u00bfEliminar este aviso (${label})? Tambi\u00e9n se quitar\u00e1 de Google Calendar.`)) return;
     const res = await fetch(`/api/notices/${notice.id}`, { method: 'DELETE' });
-    if (res.ok) {
-      setNotices((prev) => prev.filter((n) => n.id !== notice.id));
-    }
+    if (res.ok) setNotices((prev) => prev.filter((n) => n.id !== notice.id));
   }
 
   if (!session) {
@@ -94,13 +77,8 @@ export default function Dashboard({ session, calendarUrl }) {
         <div className="auth-card">
           <img src="/logo.png" alt="Instituto San Juan Pablo II" />
           <h2>Instituto San Juan Pablo II</h2>
-          <p>Sistema de información para Portería: cambios de horarios y salidas educativas.</p>
-          <button
-            type="button"
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '12px 16px' }}
-            onClick={() => signIn('google')}
-          >
+          <p>{'Sistema de informaci\u00f3n para Porter\u00eda: cambios de horarios y salidas educativas.'}</p>
+          <button type="button" className="btn btn-primary" style={{ width: '100%', padding: '12px 16px' }} onClick={() => signIn('google')}>
             Ingresar con Google
           </button>
         </div>
@@ -113,14 +91,11 @@ export default function Dashboard({ session, calendarUrl }) {
       <div className="center-screen">
         <div className="auth-card">
           <img src="/logo.png" alt="Instituto San Juan Pablo II" />
-          <h2>Acceso pendiente de autorización</h2>
+          <h2>{'Acceso pendiente de autorizaci\u00f3n'}</h2>
           <p>
-            Ingresaste con <strong>{user.email}</strong>, pero tu cuenta todavía no está habilitada como
-            Administrador o Portero. Solicita a Dirección/Administración que agregue tu correo.
+            Ingresaste con <strong>{user.email}</strong>{', pero tu cuenta todav\u00eda no est\u00e1 habilitada como Administrador o Portero. Solicita a Direcci\u00f3n/Administraci\u00f3n que agregue tu correo.'}
           </p>
-          <button type="button" className="btn btn-outline" onClick={() => signOut()}>
-            Cerrar sesión
-          </button>
+          <button type="button" className="btn btn-outline" onClick={() => signOut()}>{'Cerrar sesi\u00f3n'}</button>
         </div>
       </div>
     );
@@ -134,100 +109,40 @@ export default function Dashboard({ session, calendarUrl }) {
             <img src="/logo.png" alt="Escudo" className="brand-logo" />
             <div>
               <h1>Instituto San Juan Pablo II</h1>
-              <p>Información de Portería y Salidas Educativas</p>
+              <p>{'Informaci\u00f3n de Porter\u00eda y Salidas Educativas'}</p>
             </div>
           </div>
-
           <div className="user-actions">
             <span className={`role-pill ${isAdmin ? 'role-admin' : 'role-portero'}`}>
-              {isAdmin ? 'Administrador' : 'Portería (Solo lectura)'}
+              {isAdmin ? 'Administrador' : 'Porter\u00eda (Solo lectura)'}
             </span>
-
             {calendarUrl && (
-              <a
-                href={calendarUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-ghost-white btn-sm"
-              >
-                Ver Google Calendar
-              </a>
+              <a href={calendarUrl} target="_blank" rel="noreferrer" className="btn btn-ghost-white btn-sm">Ver Google Calendar</a>
             )}
-
             {isAdmin && (
               <>
-                <button
-                  type="button"
-                  className="btn btn-ghost-white btn-sm"
-                  onClick={() => setShowUsers(true)}
-                >
-                  Usuarios
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-gold btn-sm"
-                  onClick={() => {
-                    setEditingNotice(null);
-                    setShowForm(true);
-                  }}
-                >
-                  + Nuevo Aviso
-                </button>
+                <button type="button" className="btn btn-ghost-white btn-sm" onClick={() => setShowUsers(true)}>Usuarios</button>
+                <button type="button" className="btn btn-gold btn-sm" onClick={() => { setEditingNotice(null); setShowForm(true); }}>+ Nuevo Aviso</button>
               </>
             )}
-
-            <button
-              type="button"
-              className="btn btn-ghost-white btn-sm"
-              onClick={() => signOut()}
-            >
-              Salir
-            </button>
+            <button type="button" className="btn btn-ghost-white btn-sm" onClick={() => signOut()}>Salir</button>
           </div>
         </div>
       </header>
 
       <main className="container">
         <section className="stats-grid">
-          <div className="stat-card stat-today">
-            <div className="stat-value">{todayCount}</div>
-            <div className="stat-label">Avisos para HOY</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{tripsTodayCount}</div>
-            <div className="stat-label">Salidas educativas HOY</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-value">{upcomingCount}</div>
-            <div className="stat-label">Próximos días programados</div>
-          </div>
+          <div className="stat-card stat-today"><div className="stat-value">{todayCount}</div><div className="stat-label">Avisos para HOY</div></div>
+          <div className="stat-card"><div className="stat-value">{tripsTodayCount}</div><div className="stat-label">Salidas educativas HOY</div></div>
+          <div className="stat-card"><div className="stat-value">{upcomingCount}</div><div className="stat-label">{'Pr\u00f3ximos d\u00edas programados'}</div></div>
         </section>
 
         <section className="toolbar">
           <div className="tabs">
-            <button
-              type="button"
-              className={`tab ${tab === 'upcoming' ? 'active' : ''}`}
-              onClick={() => setTab('upcoming')}
-            >
-              Hoy y Próximos
-            </button>
-            <button
-              type="button"
-              className={`tab ${tab === 'today' ? 'active' : ''}`}
-              onClick={() => setTab('today')}
-            >
-              Solo Hoy ({todayCount})
-            </button>
-            <button
-              type="button"
-              className={`tab ${tab === 'history' ? 'active' : ''}`}
-              onClick={() => setTab('history')}
-            >
-              Pasados
-            </button>
+            <button type="button" className={`tab ${tab === 'upcoming' ? 'active' : ''}`} onClick={() => setTab('upcoming')}>{'Hoy y Pr\u00f3ximos'}</button>
+            <button type="button" className={`tab ${tab === 'today' ? 'active' : ''}`} onClick={() => setTab('today')}>Solo Hoy ({todayCount})</button>
+            <button type="button" className={`tab ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>Pasados</button>
           </div>
-
           <div className="filters">
             <select value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
               <option value="all">Todos los niveles</option>
@@ -235,18 +150,17 @@ export default function Dashboard({ session, calendarUrl }) {
               <option value="Primario">Primario</option>
               <option value="Secundario">Secundario</option>
             </select>
-
             <select value={turnFilter} onChange={(e) => setTurnFilter(e.target.value)}>
               <option value="all">Ambos turnos</option>
-              <option value="Mañana">Turno Mañana</option>
+              <option value="Ma\u00f1ana">{'Turno Ma\u00f1ana'}</option>
               <option value="Tarde">Turno Tarde</option>
             </select>
-
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
               <option value="all">Todos los tipos</option>
               <option value="entrada_tarde">Entrada Tarde</option>
               <option value="salida_anticipada">Salida Anticipada</option>
               <option value="salida_educativa">Salida Educativa</option>
+              <option value="otros">Otros / Reuniones</option>
             </select>
           </div>
         </section>
@@ -254,9 +168,7 @@ export default function Dashboard({ session, calendarUrl }) {
         {loading ? (
           <div className="empty-state">Cargando avisos...</div>
         ) : groupedByDate.length === 0 ? (
-          <div className="empty-state">
-            No hay avisos para mostrar en esta vista.
-          </div>
+          <div className="empty-state">No hay avisos para mostrar en esta vista.</div>
         ) : (
           groupedByDate.map(([dateStr, items]) => {
             const isToday = dateStr === today;
@@ -266,22 +178,27 @@ export default function Dashboard({ session, calendarUrl }) {
                   {isToday && <span className="hoy-pill">HOY</span>}
                   <h3>{formatDateAR(dateStr)}</h3>
                 </div>
-
                 <div className="notices-grid">
                   {items.map((n) => {
                     const meta = NOTICE_TYPES[n.type] || {};
+                    const isOtros = n.type === 'otros';
                     return (
                       <article key={n.id} className={`notice-card ${isToday ? 'is-today' : ''}`}>
                         <div className="notice-top">
-                          <span className={`badge ${meta.badgeClass || 'badge-primary'}`}>
+                          <span
+                            className={`badge ${meta.badgeClass || 'badge-primary'}`}
+                            style={isOtros ? { background: '#e6f4f1', color: '#0f5156', border: '1px solid #b6e0d8' } : undefined}
+                          >
                             {meta.shortLabel || n.type}
                           </span>
                           <span className="level-tag">
-                            {n.level} · Turno {n.turn}
+                            {isOtros ? 'General' : `${n.level} \u00b7 Turno ${n.turn}`}
                           </span>
                         </div>
 
-                        <div className="notice-courses">{n.courses.join(', ')}</div>
+                        <div className="notice-courses">
+                          {isOtros ? 'Reuni\u00f3n / Visita' : n.courses.join(', ')}
+                        </div>
 
                         <div className="notice-time-box">
                           {n.type === 'entrada_tarde' && `Ingresan a las ${n.start_time} hs`}
@@ -289,64 +206,27 @@ export default function Dashboard({ session, calendarUrl }) {
                           {n.type === 'salida_educativa' && (
                             <>
                               Salida: {n.start_time} hs
-                              {n.return_time
-                                ? ` · Regreso: ${n.return_date && n.return_date !== n.event_date ? `${n.return_date} ` : ''}${n.return_time} hs`
-                                : ''}
+                              {n.return_time ? ` \u00b7 Regreso: ${n.return_date && n.return_date !== n.event_date ? `${n.return_date} ` : ''}${n.return_time} hs` : ''}
                             </>
                           )}
+                          {isOtros && (n.start_time ? `Horario: ${n.start_time} hs` : 'Sin horario espec\u00edfico (Todo el d\u00eda)')}
                         </div>
 
                         <div className="notice-meta">
-                          {n.destination && (
-                            <div>
-                              <strong>Destino:</strong> {n.destination}
-                            </div>
-                          )}
-                          {n.teachers && (
-                            <div>
-                              <strong>Docentes:</strong> {n.teachers}
-                            </div>
-                          )}
-                          {n.transport && (
-                            <div>
-                              <strong>Transporte:</strong> {n.transport}
-                            </div>
-                          )}
-                          {n.notes && (
-                            <div>
-                              <strong>Obs:</strong> {n.notes}
-                            </div>
-                          )}
+                          {n.destination && <div><strong>Destino:</strong> {n.destination}</div>}
+                          {n.teachers && <div><strong>Docentes:</strong> {n.teachers}</div>}
+                          {n.transport && <div><strong>Transporte:</strong> {n.transport}</div>}
+                          {n.notes && <div><strong>{isOtros ? 'Motivo / Familia:' : 'Obs:'}</strong> {n.notes}</div>}
                         </div>
 
                         <div className="notice-footer">
                           <span className={`cal-status ${n.google_event_id ? 'cal-ok' : 'cal-err'}`}>
-                            {n.google_event_id
-                              ? '✓ En Google Calendar'
-                              : n.calendar_error
-                              ? `Sin Calendar (${n.calendar_error})`
-                              : 'Sin sincronizar'}
+                            {n.google_event_id ? '\u2713 En Google Calendar' : n.calendar_error ? `Sin Calendar (${n.calendar_error})` : 'Sin sincronizar'}
                           </span>
-
                           {isAdmin && (
                             <div style={{ display: 'flex', gap: 6 }}>
-                              <button
-                                type="button"
-                                className="btn btn-outline btn-sm"
-                                onClick={() => {
-                                  setEditingNotice(n);
-                                  setShowForm(true);
-                                }}
-                              >
-                                Editar
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-danger-outline btn-sm"
-                                onClick={() => handleDelete(n)}
-                              >
-                                Eliminar
-                              </button>
+                              <button type="button" className="btn btn-outline btn-sm" onClick={() => { setEditingNotice(n); setShowForm(true); }}>Editar</button>
+                              <button type="button" className="btn btn-danger-outline btn-sm" onClick={() => handleDelete(n)}>Eliminar</button>
                             </div>
                           )}
                         </div>
@@ -363,18 +243,10 @@ export default function Dashboard({ session, calendarUrl }) {
       {showForm && (
         <NoticeFormModal
           initialNotice={editingNotice}
-          onClose={() => {
-            setShowForm(false);
-            setEditingNotice(null);
-          }}
-          onSaved={() => {
-            setShowForm(false);
-            setEditingNotice(null);
-            fetchNotices();
-          }}
+          onClose={() => { setShowForm(false); setEditingNotice(null); }}
+          onSaved={() => { setShowForm(false); setEditingNotice(null); fetchNotices(); }}
         />
       )}
-
       {showUsers && <UsersModal onClose={() => setShowUsers(false)} />}
     </div>
   );
